@@ -1,4 +1,4 @@
-package conn
+package operation
 
 // ETCD etcd base information
 type ETCD struct {
@@ -7,3 +7,7 @@ type ETCD struct {
 	Port     string
 	Certs    string
 }
+
+// Client etcd client
+// type Client struct {
+// }
