@@ -8,3 +8,10 @@ func TestGetValue(t *testing.T) {
 		t.Error("false")
 	}
 }
+
+func TestGetDirKeys(t *testing.T) {
+	_, err := GetDirKeys("registry")
+	if err != nil {
+		t.Error("false")
+	}
+}

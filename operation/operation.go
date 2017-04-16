@@ -34,7 +34,24 @@ func Set(key string, value string, dir bool) error {
 	return nil
 }
 
-// GetValue get key from etcd
+// GetDirKeys get all keys of dir
+func GetDirKeys(dir string) ([]string, error) {
+	keys := []string{}
+	kapi, err := Client()
+	if err != nil {
+		return keys, err
+	}
+	resp, err := kapi.Get(context.Background(), dir, nil)
+	if err != nil {
+		return keys, err
+	}
+	for _, node := range resp.Node.Nodes {
+		keys = append(keys, node.Key)
+	}
+	return keys, nil
+}
+
+// GetValue get value of key
 func GetValue(key string) (string, error) {
 	value := ""
 	kapi, err := Client()
@@ -95,31 +112,6 @@ func Delete(key string, dir bool) error {
 	return nil
 }
 
-/*
-// Check check if key or value exist in etcd
-func Check(key string, value string, dir bool) (bool, error) {
-	res, err := GetKeyValue(key)
-	// check if key exist in etcd
-	if err != nil {
-		return false, err
-	}
-	// check if key exist in dir, dir's key is the same to value
-	if dir {
-		for _, i := range res.Node.Nodes {
-			key := strings.Split(i.Key, "/")
-			if key[len(key)-1] == value {
-				return true, nil
-			}
-		}
-	}
-	// check if value exist in etcd
-	if value == res.Node.Value {
-		return true, nil
-	}
-	return false, nil
-}
-*/
-
 // CheckKey check if key exist in etcd
 func CheckKey(key string) (bool, error) {
 	_, err := GetKeyValue(key)
@@ -128,3 +120,5 @@ func CheckKey(key string) (bool, error) {
 	}
 	return true, nil
 }
+
+//func SetDir() {}
