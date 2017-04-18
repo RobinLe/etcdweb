@@ -3,26 +3,81 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>react ajax</title>
-    <script src="https://cdn.bootcss.com/react/15.4.2/react.min.js"></script>
-    <script src="https://cdn.bootcss.com/react/15.4.2/react-dom.min.js"></script>
-    <script src="https://cdn.bootcss.com/babel-standalone/6.22.1/babel.min.js"></script>
-    <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <title>etcd web</title>
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+    <script src="http://cdn.bootcss.com/datatables/1.10.13/js/jquery.dataTables.min.js"></script>
+    <link href="http://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/datatables/1.10.13/css/jquery.dataTables.min.css" rel="stylesheet">
+
 </head>
 
 <body>
-    <div id="example"></div>
-    <script type="text/babel">
-        var UserGist = React.createClass({ getInitialState: function() { return { username: '', lastGistUrl: '' }; }, componentDidMount:
-        function() { this.serverRequest = $.get(this.props.source, function (result) { var lastGist = result[0]; this.setState({
-        username: lastGist.owner.login, lastGistUrl: lastGist.html_url }); }.bind(this)); }, componentWillUnmount: function()
-        { this.serverRequest.abort(); }, render: function() { return (
-        <div>
-            {this.state.username}'s last gist is
-            <a href={this.state.lastGistUrl}>here</a>.
-        </div>
-        ); } }); ReactDOM.render(
-        <UserGist source="https://api.github.com/users/octocat/gists" />, document.getElementById('example') );
+    <table class="table">
+        <thead class="thead-inverse">
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>@fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Extn.</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Extn.</th>
+                <th>Start date</th>
+                <th>Salary</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "http://192.168.0.200/arrays.json",
+                    "dataType": "jsonp"
+                }
+            });
+        });
     </script>
 </body>
 

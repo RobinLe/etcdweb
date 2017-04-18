@@ -16,7 +16,7 @@ func main() {
 	// router.PUT("/:key", getKey)
 	// router.DELETE("/:key", getKey)
 
-	router.Run(":80")
+	router.Run(":8080")
 }
 
 // Index index
