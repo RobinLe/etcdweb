@@ -9,6 +9,7 @@ import (
 
 func main() {
 	router := gin.Default()
+	router.LoadHTMLGlob("ui/*")
 	router.GET("/", index)
 
 	router.GET("/:key", getKey)
@@ -20,8 +21,10 @@ func main() {
 }
 
 // Index index
+
 func index(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+	c.HTML(http.StatusOK, "index.html", gin.H{})
+	// c.JSON(http.StatusOK, gin.H{})
 }
 
 func getKey(c *gin.Context) {
@@ -34,5 +37,5 @@ func getKey(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, keyValue)
 	}
-	c.JSON(http.StatusOK, gin.H{key: keys})
+	c.JSON(http.StatusOK, gin.H{"data": keys})
 }

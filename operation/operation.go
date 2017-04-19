@@ -10,7 +10,7 @@ import (
 // Client return etcd keysapi
 func Client() (client.KeysAPI, error) {
 	cfg := client.Config{
-		Endpoints: []string{"http://192.168.0.200:2379"},
+		Endpoints: []string{"http://192.168.14.166:32379"},
 		Transport: client.DefaultTransport,
 	}
 	c, err := client.New(cfg)
