@@ -10,7 +10,7 @@ import (
 // Client return etcd keysapi
 func Client() (client.KeysAPI, error) {
 	cfg := client.Config{
-		Endpoints: []string{"http://192.168.14.166:32379"},
+		Endpoints: []string{"http://192.168.0.200:2379"},
 		Transport: client.DefaultTransport,
 	}
 	c, err := client.New(cfg)
@@ -35,20 +35,26 @@ func Set(key string, value string, dir bool) error {
 }
 
 // GetDirKeys get all keys of dir
-func GetDirKeys(dir string) ([]string, error) {
-	keys := []string{}
+func GetDirKeys(dir string) ([]Element, error) {
+	elements := []Element{}
 	kapi, err := Client()
 	if err != nil {
-		return keys, err
+		return elements, err
 	}
 	resp, err := kapi.Get(context.Background(), dir, nil)
 	if err != nil {
-		return keys, err
+		return elements, err
 	}
 	for _, node := range resp.Node.Nodes {
-		keys = append(keys, node.Key)
+		element := Element{}
+		element.Key = node.Key
+		element.Value = node.Value
+		element.Dir = node.Dir
+		element.CreateIndex = node.CreatedIndex
+		element.ModifyIndex = node.CreatedIndex
+		elements = append(elements, element)
 	}
-	return keys, nil
+	return elements, nil
 }
 
 // GetValue get value of key
