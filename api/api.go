@@ -8,6 +8,10 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
+type Config struct {
+	Endpoint string `form:"etcd-endpoint" binding:"required"`
+}
+
 var etcdClient = operation.EtcdClient{}
 
 func main() {
@@ -15,25 +19,33 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("ui/*")
 
-	router.GET("/", setEndpoint)
+	router.GET("/", index)
+	router.POST("/setendpoint", setEndpoint)
 	router.GET("/get/:key", getKey)
 	router.GET("/get/:key/*subkey", getKey)
-	router.GET("/web/:key", index)
-	router.GET("/web/:key/*subkey", index)
+	router.GET("/web/:key", renderHTML)
+	router.GET("/web/:key/*subkey", renderHTML)
 
 	router.Run(":8080")
 }
 
-func setEndpoint(c *gin.Context) {
-	etcdClient.InitClient("http://192.168.14.166:32379")
-	c.JSON(http.StatusOK, gin.H{"200": "ok"})
+func index(c *gin.Context) {
+	c.HTML(http.StatusOK, "form.html", gin.H{})
 }
 
-func index(c *gin.Context) {
+func setEndpoint(c *gin.Context) {
+	config := Config{}
+	if c.Bind(&config) == nil {
+		etcdClient.InitClient(config.Endpoint)
+	}
+	c.HTML(http.StatusOK, "table.html", gin.H{"key": "//"})
+}
+
+func renderHTML(c *gin.Context) {
 	key := c.Param("key")
 	subkey := c.Param("subkey")
 	key = key + subkey
-	c.HTML(http.StatusOK, "index.html", gin.H{"key": key})
+	c.HTML(http.StatusOK, "table.html", gin.H{"key": key})
 }
 
 func getKey(c *gin.Context) {
@@ -44,7 +56,5 @@ func getKey(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"400": "Not Found!"})
 	}
-
-	// c.String(http.StatusOK, key)
 	c.JSON(http.StatusOK, gin.H{"data": keys})
 }
