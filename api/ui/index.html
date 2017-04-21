@@ -18,24 +18,79 @@
         <thead>
             <tr>
                 <th>Key</th>
-                <th>Dir</th>
                 <th>Value</th>
+                <th>Dir</th>
                 <th>CreateIndex</th>
                 <th>ModifyIndex</th>
+                <th>Operation</th>
             </tr>
         </thead>
     </table>
-
     <script>
         $(document).ready(function () {
             $('#example').DataTable({
+                "autoWidth": false,
                 "ajax": "/get/{{.key}}",
-                "columns": [
-                    { "data": "Key" },
-                    { "data": "Dir" },
-                    { "data": "Value" },
-                    { "data": "CreateIndex" },
-                    { "data": "ModifyIndex" }
+                "columns": [{
+                        "data": "Key",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return $('<a>')
+                                    .attr('href', "/web" + data)
+                                    .text(data)
+                                    .wrap('<div></div>')
+                                    .parent()
+                                    .html();
+
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        "data": "Value",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                try {
+                                    var jsondata = JSON.parse(data)
+                                    return $('<pre style="font-family:consolas">')
+                                        .text(JSON.stringify(jsondata, undefined, 4))
+                                        .wrap('<div></div>')
+                                        .parent()
+                                        .html();
+                                } catch (e) {
+                                    return data;
+                                }
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        "data": "Dir"
+                    },
+                    {
+                        "data": "CreateIndex",
+                    },
+                    {
+                        "data": "ModifyIndex"
+                    },
+                    {
+                        "data": "Key",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                return $('<i class="zoom icon">')
+                                    .attr('href', "/web" + data)
+                                    .text("")
+                                    .wrap('<div></div>')
+                                    .parent()
+                                    .html();
+
+                            } else {
+                                return data;
+                            }
+                        }
+                    }
                 ]
             });
         });

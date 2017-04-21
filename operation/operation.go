@@ -2,32 +2,32 @@ package operation
 
 import (
 	"context"
-	"path/filepath"
 
 	"github.com/coreos/etcd/client"
 )
 
-// Client return etcd keysapi
-func Client() (client.KeysAPI, error) {
+// InitClient init a etcd client
+func (c *EtcdClient) InitClient(endpoint string) {
 	cfg := client.Config{
-		Endpoints: []string{"http://192.168.0.200:2379"},
+		Endpoints: []string{endpoint},
 		Transport: client.DefaultTransport,
 	}
-	c, err := client.New(cfg)
+	cl, err := client.New(cfg)
 	if err != nil {
-		return nil, err
+		panic("etcd client generate fail")
 	}
-	kapi := client.NewKeysAPI(c)
-	return kapi, nil
+	c.Endpoint = endpoint
+	c.KeysAPI = client.NewKeysAPI(cl)
 }
 
 // Set save data in etcd
-func Set(key string, value string, dir bool) error {
-	kapi, err := Client()
-	if err != nil {
-		return err
-	}
-	_, err = kapi.Set(context.Background(), key, value, &client.SetOptions{Dir: dir})
+func (c *EtcdClient) Set(key string, value string, dir bool) error {
+	_, err := c.KeysAPI.Set(
+		context.Background(),
+		key,
+		value,
+		&client.SetOptions{Dir: dir},
+	)
 	if err != nil {
 		return err
 	}
@@ -35,13 +35,9 @@ func Set(key string, value string, dir bool) error {
 }
 
 // GetDirKeys get all keys of dir
-func GetDirKeys(dir string) ([]Element, error) {
+func (c *EtcdClient) GetDirKeys(dir string) ([]Element, error) {
 	elements := []Element{}
-	kapi, err := Client()
-	if err != nil {
-		return elements, err
-	}
-	resp, err := kapi.Get(context.Background(), dir, nil)
+	resp, err := c.KeysAPI.Get(context.Background(), dir, nil)
 	if err != nil {
 		return elements, err
 	}
@@ -58,13 +54,9 @@ func GetDirKeys(dir string) ([]Element, error) {
 }
 
 // GetValue get value of key
-func GetValue(key string) (string, error) {
+func (c *EtcdClient) GetValue(key string) (string, error) {
 	value := ""
-	kapi, err := Client()
-	if err != nil {
-		return value, err
-	}
-	resp, err := kapi.Get(context.Background(), key, nil)
+	resp, err := c.KeysAPI.Get(context.Background(), key, nil)
 	if err != nil {
 		return value, err
 	}
@@ -73,28 +65,24 @@ func GetValue(key string) (string, error) {
 }
 
 // GetKeyValue get key value from etcd
-func GetKeyValue(key string) (map[string]string, error) {
-	keyValue := map[string]string{}
-	kapi, err := Client()
+func (c *EtcdClient) GetKeyValue(key string) (Element, error) {
+	element := Element{}
+	resp, err := c.KeysAPI.Get(context.Background(), key, nil)
 	if err != nil {
-		return keyValue, err
+		return element, err
 	}
-	resp, err := kapi.Get(context.Background(), key, nil)
-	if err != nil {
-		return keyValue, err
-	}
-	baseKey := filepath.Base(key)
-	keyValue[baseKey] = resp.Node.Value
-	return keyValue, nil
+	// baseKey := filepath.Base(key)
+	element.Key = resp.Node.Key
+	element.Value = resp.Node.Value
+	element.Dir = resp.Node.Dir
+	element.CreateIndex = resp.Node.CreatedIndex
+	element.ModifyIndex = resp.Node.CreatedIndex
+	return element, nil
 }
 
 // Update update specfic key's value
-func Update(key string, value string) error {
-	kapi, err := Client()
-	if err != nil {
-		return err
-	}
-	_, err = kapi.Update(context.Background(), key, value)
+func (c *EtcdClient) Update(key string, value string) error {
+	_, err := c.KeysAPI.Update(context.Background(), key, value)
 	if err != nil {
 		return err
 	}
@@ -102,12 +90,8 @@ func Update(key string, value string) error {
 }
 
 // Delete delete a key from etcd
-func Delete(key string, dir bool) error {
-	kapi, err := Client()
-	if err != nil {
-		return err
-	}
-	_, err = kapi.Delete(
+func (c *EtcdClient) Delete(key string, dir bool) error {
+	_, err := c.KeysAPI.Delete(
 		context.Background(),
 		key,
 		&client.DeleteOptions{Dir: dir, Recursive: true},
@@ -119,8 +103,8 @@ func Delete(key string, dir bool) error {
 }
 
 // CheckKey check if key exist in etcd
-func CheckKey(key string) (bool, error) {
-	_, err := GetKeyValue(key)
+func (c *EtcdClient) CheckKey(key string) (bool, error) {
+	_, err := c.GetKeyValue(key)
 	if err != nil {
 		return false, err
 	}

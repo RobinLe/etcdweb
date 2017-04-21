@@ -1,16 +1,14 @@
 package operation
 
-// ETCD etcd base information
-type ETCD struct {
-	Protocol string
-	IP       string
-	Port     string
-	Certs    string
-}
+import (
+	"github.com/coreos/etcd/client"
+)
 
-// Client etcd client
-// type Client struct {
-// }
+// EtcdClient etcd client
+type EtcdClient struct {
+	Endpoint string
+	KeysAPI  client.KeysAPI
+}
 
 // Element object of a etcd value
 type Element struct {
