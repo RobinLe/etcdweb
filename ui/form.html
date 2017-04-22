@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>etcd web</title>
+    <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/datatables/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="http://cdn.bootcss.com/datatables/1.10.15/js/dataTables.semanticui.js"></script>
+    <script src="http://cdn.bootcss.com/semantic-ui/2.2.10/semantic.min.js"></script>
+    <link href="http://cdn.bootcss.com/semantic-ui/2.2.10/semantic.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/datatables/1.10.13/css/dataTables.semanticui.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="ui inverted segment">
+        <div class="ui inverted secondary pointing menu">
+            <a class="item" href="/">Config </a>
+            <a class="item" href="/web//">Root </a>
+        </div>
+    </div>
+
+    <form class="ui form" action="/setendpoint" method="post">
+        <div class="field">
+            <input type="text" name="etcd-endpoint" placeholder="etcd endpoint example: http://127.0.0.1:2379">
+        </div>
+        <button class="ui button" type="submit">Submit</button>
+    </form>
+</body>
+
+</html>
