@@ -2,8 +2,7 @@
 
 
 
-This just a etcd tool that show etcd data in web.
-
+Web UI of etcd data.
 
 
 ![](https://raw.githubusercontent.com/RobinLe/etcdweb/master/ui/pics/etcdweb-endpoint.png)

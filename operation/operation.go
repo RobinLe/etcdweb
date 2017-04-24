@@ -90,14 +90,21 @@ func (c *EtcdClient) Update(key string, value string) error {
 }
 
 // Delete delete a key from etcd
-func (c *EtcdClient) Delete(key string, dir bool) error {
+func (c *EtcdClient) Delete(key string) error {
 	_, err := c.KeysAPI.Delete(
 		context.Background(),
 		key,
-		&client.DeleteOptions{Dir: dir, Recursive: true},
+		&client.DeleteOptions{Dir: true, Recursive: true},
 	)
 	if err != nil {
-		return err
+		_, err := c.KeysAPI.Delete(
+			context.Background(),
+			key,
+			&client.DeleteOptions{},
+		)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
