@@ -8,32 +8,35 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
+// Config etcd config
 type Config struct {
+	Username string `form:"username"`
+	Password string `form:"password"`
 	Endpoint string `form:"etcd-endpoint" binding:"required"`
 }
 
 var etcdClient = operation.EtcdClient{}
 
 func main() {
-	etcdClient.InitClient("http://192.168.14.166:32379")
+	etcdClient.InitClient("http://127.0.0.1:2379")
 	router := gin.Default()
-	router.LoadHTMLGlob("ui/*")
+	router.LoadHTMLGlob("ui/html/*")
 
 	router.GET("/", index)
-	router.POST("/setendpoint", setEndpoint)
+	router.POST("/setetcd", setEtcdServer)
 	router.GET("/get/:key", getKey)
 	router.GET("/get/:key/*subkey", getKey)
-	router.GET("/web/:key", renderHTML)
-	router.GET("/web/:key/*subkey", renderHTML)
+	router.GET("/web/:key", renderData)
+	router.GET("/web/:key/*subkey", renderData)
 
 	router.Run(":8080")
 }
 
 func index(c *gin.Context) {
-	c.HTML(http.StatusOK, "form.html", gin.H{})
+	c.HTML(http.StatusOK, "config.html", gin.H{})
 }
 
-func setEndpoint(c *gin.Context) {
+func setEtcdServer(c *gin.Context) {
 	config := Config{}
 	if c.Bind(&config) == nil {
 		etcdClient.InitClient(config.Endpoint)
@@ -41,7 +44,7 @@ func setEndpoint(c *gin.Context) {
 	c.HTML(http.StatusOK, "table.html", gin.H{"key": "//"})
 }
 
-func renderHTML(c *gin.Context) {
+func renderData(c *gin.Context) {
 	key := c.Param("key")
 	subkey := c.Param("subkey")
 	key = key + subkey

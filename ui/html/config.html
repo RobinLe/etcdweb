@@ -13,15 +13,25 @@
 </head>
 
 <body>
-    <div class="ui inverted segment">
-        <div class="ui inverted secondary pointing menu">
-            <a class="item" href="/">Config </a>
-            <a class="item" href="/web//">Root </a>
-        </div>
+    <div class="ui inverted menu">
+        <a class="green item" href="/">Config </a>
+        <a class="green item" href="/web//">Root </a>
     </div>
 
-    <form class="ui form" action="/setendpoint" method="post">
+    <form class="ui form" action="/setetcd" method="post">
+        <div class="two fields">
+            <div class="field">
+                <label>Username</label>
+                <input placeholder="Username" type="text">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input placeholder="Password" type="text">
+            </div>
+        </div>
+
         <div class="field">
+            <label>Etcd Endpoint</label>
             <input type="text" name="etcd-endpoint" placeholder="etcd endpoint example: http://127.0.0.1:2379">
         </div>
         <button class="ui button" type="submit">Submit</button>
