@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div class="ui inverted menu">
+    <div class="ui inverted huge menu">
         <a class="green item" href="/">Config </a>
         <a class="green item" href="/web//">Root </a>
     </div>
@@ -94,10 +94,12 @@
 
         function deleteKey(elem) {
             var key = $(elem).attr("id");
-            alert(key);
             $.ajax({
                 url: key,
                 type: 'DELETE',
+                success: function() {
+                    location.reload();
+                }
             });
         }
     </script>

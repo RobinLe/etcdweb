@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 
 	"github.com/robinle/etcdweb/operation"
@@ -31,7 +32,9 @@ func main() {
 	router.GET("/web/:key", renderData)
 	router.GET("/web/:key/*subkey", renderData)
 
-	router.Run(":8080")
+	serverPort := flag.String("port", "8080", "service port")
+	flag.Parse()
+	router.Run(":" + *serverPort)
 }
 
 // return etcd config page
