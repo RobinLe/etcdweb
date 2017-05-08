@@ -2,21 +2,39 @@ package operation
 
 import (
 	"context"
+	"net"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/robinle/etcdweb/api"
 
 	"github.com/coreos/etcd/client"
 )
 
 // InitClient init a etcd client
-func (c *EtcdClient) InitClient(endpoint string) {
+func (c *EtcdClient) InitClient(config *api.Config) {
 	cfg := client.Config{
-		Endpoints: []string{endpoint},
+		Endpoints: []string{config.Endpoint},
 		Transport: client.DefaultTransport,
 	}
+	if strings.Split(config.Endpoint, ":")[0] == "https" {
+		httpsTransport := &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			Dial: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).Dial,
+			TLSHandshakeTimeout: 10 * time.Second,
+		}
+		cfg.Transport = httpsTransport
+	}
+
 	cl, err := client.New(cfg)
 	if err != nil {
 		panic("etcd client generate fail")
 	}
-	c.Endpoint = endpoint
+	c.Endpoint = config.Endpoint
 	c.KeysAPI = client.NewKeysAPI(cl)
 }
 

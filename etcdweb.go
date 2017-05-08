@@ -4,17 +4,11 @@ import (
 	"flag"
 	"net/http"
 
+	"github.com/robinle/etcdweb/api"
 	"github.com/robinle/etcdweb/operation"
 
 	"gopkg.in/gin-gonic/gin.v1"
 )
-
-// Config etcd config
-type Config struct {
-	Username string `form:"username"`
-	Password string `form:"password"`
-	Endpoint string `form:"etcd-endpoint" binding:"required"`
-}
 
 var etcdClient = operation.EtcdClient{}
 
@@ -24,11 +18,13 @@ func main() {
 	router.LoadHTMLGlob("ui/html/*")
 
 	router.GET("/", index)
-	router.POST("/setetcd", setEtcdServer)
+	router.POST("/config", config)
+
 	router.GET("/raw/:key", getKey)
 	router.GET("/raw/:key/*subkey", getKey)
 	router.DELETE("/raw/:key", deleteKey)
 	router.DELETE("/raw/:key/*subkey", deleteKey)
+
 	router.GET("/web/:key", renderData)
 	router.GET("/web/:key/*subkey", renderData)
 
@@ -43,10 +39,10 @@ func index(c *gin.Context) {
 }
 
 // config etcd and return the root key
-func setEtcdServer(c *gin.Context) {
-	config := Config{}
+func config(c *gin.Context) {
+	config := api.Config{}
 	if c.Bind(&config) == nil {
-		etcdClient.InitClient(config.Endpoint)
+		etcdClient.InitClient(&config)
 	}
 	c.HTML(http.StatusOK, "table.html", gin.H{"key": "//"})
 }
